@@ -1,0 +1,53 @@
+%FEEDFORWARDUPDATE   Compute feedforward signal for next trial.
+function f_jplus1 = FeedforwardUpdate(t,r,e_j,u_j,f_j)
+%OUT:
+%f_jplus1 = feed forward signal for upcoming trial
+%
+%IN:
+%t = trial time vector
+%r = current trial position reference
+%e_j = current trial tracking error
+%u_j = current trial control effort
+%f_j = current trial feed forward signal
+
+% Load trajectory for feedforward exercise.
+% load('trajectory.mat');
+
+% Load Learning controller (uncomment for ILC implementation).
+% load('ILCController.mat');
+
+% Calculate feedforward.
+% f_jplus1 = 0*t;
+
+% Determine feedforward for exercise 15b
+Ts = 0.001;
+C_ff = 0.1;
+%
+MovingAvgLength = 20;
+%
+r_dot = [0; ((r(2:end) - r(1:(end-1),1))/(Ts))];
+%
+A_dot = 1;
+B_dot = (1/MovingAvgLength)*ones(MovingAvgLength,1);
+r_dot = filtfilt(B_dot,A_dot,r_dot);
+%
+r_ddot = [0; ((r_dot(2:end) - r_dot(1:(end-1),1))/(Ts))];
+%
+A_ddot = A_dot;
+B_ddot = B_dot;
+r_ddot = filtfilt(B_ddot,A_ddot,r_ddot);
+%
+f_f = C_ff * r_ddot;
+
+% f_jplus1 = f_f;
+
+% 
+
+
+
+
+
+
+
+% Make sure the feedforward is a column.
+f_jplus1 = f_jplus1(:);
